@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: 'HeirOfLightBold';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/HeirOfLightBold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@theme {
+  --font-serif: "HeirOfLightBold", serif;
+  --font-sans: "HeirOfLightBold", sans-serif;
+  
+  --color-malakh: #d97706;
+  --color-luctator: #ef4444;
+  --color-anthropos: #f97316;
+}
+
+body {
+  @apply bg-[#050505] text-gray-200 font-sans antialiased overflow-x-hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.glass-panel {
+  @apply bg-black/40 backdrop-blur-md border border-white/10;
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Custom Music Slider */
+.music-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  width: 100%;
+}
+.music-slider:focus {
+  outline: none;
+}
+.music-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: #4a3b2c;
+  border-radius: 4px;
+}
+.music-slider::-webkit-slider-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #c19a5b;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -5px;
+}
+.music-slider::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: #4a3b2c;
+  border-radius: 4px;
+}
+.music-slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #c19a5b;
+  cursor: pointer;
+  border: none;
+}
