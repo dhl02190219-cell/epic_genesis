@@ -122,6 +122,13 @@ export function CharactersSection() {
 
                 <div className="space-y-6">
                   <div>
+                    <h4 className="text-xs uppercase tracking-widest text-gray-500 mb-2">정보</h4>
+                    <p className="text-sm font-mono text-amber-400/80 bg-amber-900/10 p-3 rounded-lg border border-amber-500/20">
+                      {selectedChar.info}
+                    </p>
+                  </div>
+
+                  <div>
                     <h4 className="text-xs uppercase tracking-widest text-gray-500 mb-2">직위</h4>
                     <p className="text-white">{selectedChar.position}</p>
                   </div>

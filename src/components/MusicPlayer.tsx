@@ -4,13 +4,13 @@ import { Music, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 
 export function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [volume, setVolume] = useState(0.5);
+  const [isOpen, setIsOpen] = useState(true); // Open by default so users see the controls
+  const [volume, setVolume] = useState(0.3);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Using a reliable, direct audio file URL for background music
-  const audioUrl = "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=cinematic-time-lapse-115672.mp3";
+  // Reliable direct MP3 URL for background music
+  const audioUrl = "https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3";
 
   useEffect(() => {
     if (audioRef.current) {
@@ -20,33 +20,52 @@ export function MusicPlayer() {
   }, [volume, isMuted]);
 
   useEffect(() => {
-    // Attempt autoplay on mount
-    if (audioRef.current) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
+    const playAudio = async () => {
+      try {
+        if (audioRef.current && !isPlaying) {
+          await audioRef.current.play();
           setIsPlaying(true);
-        }).catch(error => {
-          console.log("Autoplay prevented by browser. User interaction required.", error);
-          setIsPlaying(false);
-        });
+        }
+      } catch (err) {
+        console.log("Autoplay prevented. Waiting for user interaction.", err);
       }
-    }
+    };
+
+    // Try playing immediately on mount
+    playAudio();
+
+    // Also try playing on the first user interaction with the page
+    const handleInteraction = () => {
+      playAudio();
+      ['click', 'keydown', 'touchstart'].forEach(event => 
+        document.removeEventListener(event, handleInteraction)
+      );
+    };
+
+    ['click', 'keydown', 'touchstart'].forEach(event => 
+      document.addEventListener(event, handleInteraction, { once: true })
+    );
+
+    return () => {
+      ['click', 'keydown', 'touchstart'].forEach(event => 
+        document.removeEventListener(event, handleInteraction)
+      );
+    };
   }, []);
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.error("Audio playback failed:", error);
-          });
+      try {
+        if (isPlaying) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        } else {
+          await audioRef.current.play();
+          setIsPlaying(true);
         }
+      } catch (err) {
+        console.error("Playback failed:", err);
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
@@ -71,7 +90,7 @@ export function MusicPlayer() {
         src={audioUrl}
         loop
         preload="auto"
-        autoPlay
+        crossOrigin="anonymous"
       />
 
       <AnimatePresence>
@@ -80,26 +99,18 @@ export function MusicPlayer() {
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="mb-4 p-4 rounded-2xl glass-panel border border-white/10 shadow-2xl w-64"
+            className="mb-4 p-2 rounded-full glass-panel border border-white/10 shadow-2xl flex items-center gap-3"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Music size={16} className="text-amber-500" />
-                <span className="text-xs font-bold tracking-widest uppercase text-gray-300">
-                  Background Music
-                </span>
-              </div>
-              <button
-                onClick={togglePlay}
-                className="p-2 rounded-full bg-amber-600/20 hover:bg-amber-600/40 text-amber-500 transition-colors"
-              >
-                {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
-              </button>
-            </div>
+            <button
+              onClick={togglePlay}
+              className="p-3 rounded-full bg-amber-600/20 hover:bg-amber-600/40 text-amber-500 transition-colors"
+            >
+              {isPlaying ? <Pause size={20} /> : <Play size={20} className="ml-1" />}
+            </button>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 w-28 pr-4">
               <button onClick={toggleMute} className="text-gray-400 hover:text-white transition-colors">
-                {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
               </button>
               <input
                 type="range"
